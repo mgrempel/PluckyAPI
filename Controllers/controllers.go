@@ -7,9 +7,9 @@ import (
 )
 
 //SelectAll Selects all data from a specified table in the database
-func (container *Container) SelectAll(table string) (result *sql.Rows, err error) {
+func (container Container) SelectAll(table string) (result *sql.Rows, err error) {
 	//Check to see if table exists in db before proceeding
-	if !misc.Contains(container.Tables, table) {
+	if !misc.Contains(container.GetAllTables(), table) {
 		err = fmt.Errorf("No such table \"%s\"", table)
 		return nil, err
 	}
@@ -37,3 +37,7 @@ func (container *Container) SelectAll(table string) (result *sql.Rows, err error
 
 	return result, nil
 }
+
+// func (container Container) InsertRow() {
+//
+// }

@@ -28,7 +28,10 @@ func main() {
 		panic(err)
 	}
 
-	container := controllers.Container{Db: database, Tables: retrieveTables(database)}
+	tableMap, err := retrieveTables(database)
+	fmt.Println(err)
+
+	container := controllers.Container{Db: database, Tables: tableMap}
 
 	tester(&container)
 }
@@ -42,7 +45,6 @@ func tester(container *controllers.Container) {
 	rows, _ := container.SelectAll("TestTable1")
 	for rows.Next() {
 		var row = new(TestTable)
-
 		rows.Scan(&row.UserName, &row.Password)
 		testTables = append(testTables, *row)
 	}
@@ -56,19 +58,41 @@ func tester(container *controllers.Container) {
 
 //Determine list of valid table names. This is to allow for dynamic queries without having to bind table names to a prepared query, which is unsupported for select statements
 //Cheeky workaround lol
-func retrieveTables(connection *sql.DB) (tables []string) {
-	statement := "SELECT name FROM Sys.Tables"
+func retrieveTables(connection *sql.DB) (tables map[string]controllers.Table, err error) {
+	tables = make(map[string]controllers.Table)
 
-	rows, _ := connection.Query(statement)
+	tableStatement := "SELECT name FROM Sys.Tables"
+	rows, err := connection.Query(tableStatement)
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	for rows.Next() {
-		var table = new(string)
+		var table string
 
 		rows.Scan(&table)
-		tables = append(tables, *table)
+
+		//Get columns for each table
+		columnStatement := fmt.Sprintf("SELECT Column_Name FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Name = '%s'", table)
+		columns, err := connection.Query(columnStatement)
+		defer columns.Close()
+		if err != nil {
+			return nil, err
+		}
+
+		var tableColumns = make([]string, 0)
+
+		for columns.Next() {
+			var currentColumn string
+			columns.Scan(&currentColumn)
+			tableColumns = append(tableColumns, currentColumn)
+		}
+		//add columns into the map
+		tables[table] = controllers.Table{Columns: tableColumns}
 	}
 	fmt.Println(tables)
-	return tables
+	return tables, nil
 }
 
 //Temporary testing tables
