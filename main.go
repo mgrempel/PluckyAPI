@@ -1,7 +1,7 @@
 package main
 
 import (
-	"PluckyAPI/Controllers"
+	"PluckyAPI/Builders"
 	"PluckyAPI/Utilities/dbhelpers"
 	"database/sql"
 	"fmt"
@@ -31,35 +31,14 @@ func main() {
 	tableMap, err := retrieveTables(database)
 	fmt.Println(err)
 
-	container := controllers.Container{Db: database, Tables: tableMap}
-
-	tester(&container)
-}
-
-func tester(container *controllers.Container) {
-
-	fmt.Println("\nTesting Select all with a valid table")
-	//Testing select all
-	var testTables = make([]TestTable, 0)
-
-	rows, _ := container.SelectAll("TestTable1")
-	for rows.Next() {
-		var row = new(TestTable)
-		rows.Scan(&row.UserName, &row.Password)
-		testTables = append(testTables, *row)
-	}
-	fmt.Println(testTables)
-
-	//Testing Select all invalid table
-	fmt.Println("\nTesting Select all with an invalid table")
-	_, err := container.SelectAll("notarealtable")
-	fmt.Println(err)
+	//Initialize the container for the SQL Builders
+	container := builders.Container{Tables: tableMap}
 }
 
 //Determine list of valid table names. This is to allow for dynamic queries without having to bind table names to a prepared query, which is unsupported for select statements
 //Cheeky workaround lol
-func retrieveTables(connection *sql.DB) (tables map[string]controllers.Table, err error) {
-	tables = make(map[string]controllers.Table)
+func retrieveTables(connection *sql.DB) (tables map[string]builders.Table, err error) {
+	tables = make(map[string]builders.Table)
 
 	tableStatement := "SELECT name FROM Sys.Tables"
 	rows, err := connection.Query(tableStatement)
@@ -89,7 +68,7 @@ func retrieveTables(connection *sql.DB) (tables map[string]controllers.Table, er
 			tableColumns = append(tableColumns, currentColumn)
 		}
 		//add columns into the map
-		tables[table] = controllers.Table{Columns: tableColumns}
+		tables[table] = builders.Table{Columns: tableColumns}
 	}
 	fmt.Println(tables)
 	return tables, nil
