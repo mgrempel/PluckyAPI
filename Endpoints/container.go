@@ -7,11 +7,3 @@ import "database/sql"
 type Container struct {
 	Db *sql.DB
 }
-
-//GetAllTables returns all tables given a map of tables
-// func (env Container) GetAllTables() (names []string) {
-// 	for key, _ := range env.Tables {
-// 		names = append(names, key)
-// 	}
-// 	return names
-// }
