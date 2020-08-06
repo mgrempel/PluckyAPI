@@ -17,25 +17,4 @@ func (bld Builder) Select(table string, query models.Query) (queryWithSelect mod
 	query.AppendToQuery(selectStatement)
 
 	return query, nil
-
-	// //Prepare the Query
-	// preparedQuery, err := db.Prepare(query)
-	// defer preparedQuery.Close()
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// //Execute query
-	// result, err = preparedQuery.Query()
-	// if err != nil {
-	// 	return nil, err
-	// }
 }
-
-//Select with parameters
-
-//func (container Container) ParameterSelect(table string, parameters ...string)
-
-//Insert row
-
-//Delete row
