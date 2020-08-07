@@ -12,6 +12,8 @@ type Column struct {
 }
 
 //------------------------------------------------------------------------------
+
+//Query supporting struct for query generation
 type Query struct {
 	queryString string
 	parameters  []string
@@ -38,3 +40,14 @@ func (q Query) GetParams() []string {
 }
 
 //------------------------------------------------------------------------------
+
+//Request embodies the structure of a json request sent to the API
+type Request struct {
+	Command   string
+	TableName string
+	Values    map[string]string
+}
+
+// type QueryRequest struct {
+//
+// }
