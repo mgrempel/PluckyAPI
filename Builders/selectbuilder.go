@@ -8,7 +8,7 @@ import (
 //Select Selects all data from a specified table in the database. Only handling select all for now.
 func (bld Builder) Select(table string, query models.Query) (queryWithSelect models.Query, err error) {
 	//Check to see if table exists in db before proceeding
-	if bld.findTable(table) {
+	if !bld.findTable(table) {
 		return models.Query{}, fmt.Errorf("table does not exist in the database")
 	}
 
