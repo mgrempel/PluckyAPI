@@ -1,13 +1,14 @@
 package builders
 
 import (
-	"PluckyAPI/Models"
+	models "PluckyAPI/Models"
 	"fmt"
 )
 
 //Delete prepares the first portion of a delete statement for the database
-func (bld Builder) Delete(table string, query models.Query) (queryWithSelect models.Query, err error) {
+func (bld SQLBuilder) Delete(request models.Request, query models.Query) (queryWithSelect models.Query, err error) {
 	//Check to see if table exists in db before proceeding
+	table := request.TableName
 	if !bld.findTable(table) {
 		return models.Query{}, fmt.Errorf("table does not exist in the database")
 	}

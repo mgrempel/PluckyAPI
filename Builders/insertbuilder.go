@@ -6,7 +6,9 @@ import (
 )
 
 //Insert Handles an insert statement
-func (bld Builder) Insert(table string, parameters map[string]string, query models.Query) (queryWithInsert models.Query, err error) {
+func (bld SQLBuilder) Insert(request models.Request, query models.Query) (queryWithInsert models.Query, err error) {
+	table := request.TableName
+	parameters := request.Values
 	//Check to see if table exists in db before proceeding
 	if !bld.findTable(table) {
 		return models.Query{}, fmt.Errorf("table does not exist in the database")

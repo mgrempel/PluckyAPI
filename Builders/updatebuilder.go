@@ -6,7 +6,9 @@ import (
 )
 
 //Update Parses a query into an update statement
-func (bld Builder) Update(table string, parameters map[string]string, query models.Query) (queryWithUpdate models.Query, err error) {
+func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryWithUpdate models.Query, err error) {
+	table := request.TableName
+	parameters := request.Updates
 	//Check if table exists before proceeding
 	if !bld.findTable(table) {
 		return models.Query{}, fmt.Errorf("table does not exist in the database")
