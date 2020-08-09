@@ -13,7 +13,7 @@ an enpoin */
 func (env *Container) HandleRequest() {
 	builder := env.Builder
 	//This will be kinda what incoming JSON will look like.
-	b := []byte(`{"Command":"DELETE",
+	b := []byte(`{"Command":"SELECT",
 							  "TableName":"TestTable1",
 								"Values":{"UserName":"mackenzie","Password":"remple"},
 								"Updates":{"UserName":"mackenzie","Password":"rempel"}}`)
@@ -21,17 +21,18 @@ func (env *Container) HandleRequest() {
 	//UnMarshall query into a request struct - Might couple this off later but idk
 	var request = models.Request{}
 	query := models.Query{}
+	var err error
 	json.Unmarshal(b, &request)
 
 	//Determine the type of request
 	switch request.Command {
 	case "SELECT":
-		query, err := builder.Select(request, query)
+		query, err = builder.Select(request, query)
 		if err != nil {
 			//Need a func to handle creating and returning an error to the caller
 			panic(err)
 		}
-		fmt.Println(query.GetQuery())
+		//fmt.Println(query.GetQuery())
 	case "INSERT":
 		query, err := builder.Insert(request, query)
 		if err != nil {
@@ -53,6 +54,9 @@ func (env *Container) HandleRequest() {
 	default:
 		fmt.Println("Something went wrong lol")
 	}
+
+	query.AppendToQuery(";")
+	env.executeQuery(query)
 
 	//Evaluate where constraint
 
