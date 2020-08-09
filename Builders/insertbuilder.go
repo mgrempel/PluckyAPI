@@ -18,14 +18,9 @@ func (bld Builder) Insert(table string, parameters map[string]string, query mode
 	for key := range parameters {
 		columns = append(columns, key)
 	}
-	//Error is happening here
 	if !bld.findColumns(table, columns) {
 		return models.Query{}, fmt.Errorf("Invalid fields")
 	}
-
-	//Check to see if columns exist in db before proceeding
-
-	//Handling the first part of the SQL statement.
 
 	//Handle the columns in the braces, This can probably be refactored later on to get rid of unnecessary logic - templates?
 	var columnString string
