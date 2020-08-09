@@ -2,8 +2,8 @@ package main
 
 import (
 	"PluckyAPI/Builders"
+	"PluckyAPI/Endpoints"
 	"PluckyAPI/Utilities/dbhelpers"
-	"database/sql"
 	"fmt"
 )
 
@@ -28,51 +28,62 @@ func main() {
 		panic(err)
 	}
 
-	tableMap, err := retrieveTables(database)
-	fmt.Println(err)
+	tableMap, err := dbhelpers.PopulateTables(database)
+	if err != nil {
+		panic(err)
+	}
+
+	builder := builders.SQLBuilder{Tables: tableMap}
+	container := endpoints.Container{Db: database, Builder: builder}
+
+	container.HandleRequest()
+	//var builder =
+
+	// var container = endpoints.Container{Db: database}
+	// container.HandleRequest()
 
 	//Initialize the container for the SQL Builders
-	container := builders.Container{Tables: tableMap}
+	//container := builders.Container{Tables: tableMap}
 }
 
 //Determine list of valid table names. This is to allow for dynamic queries without having to bind table names to a prepared query, which is unsupported for select statements
 //Cheeky workaround lol
-func retrieveTables(connection *sql.DB) (tables map[string]builders.Table, err error) {
-	tables = make(map[string]builders.Table)
-
-	tableStatement := "SELECT name FROM Sys.Tables"
-	rows, err := connection.Query(tableStatement)
-	defer rows.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	for rows.Next() {
-		var table string
-
-		rows.Scan(&table)
-
-		//Get columns for each table
-		columnStatement := fmt.Sprintf("SELECT Column_Name FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Name = '%s'", table)
-		columns, err := connection.Query(columnStatement)
-		defer columns.Close()
-		if err != nil {
-			return nil, err
-		}
-
-		var tableColumns = make([]string, 0)
-
-		for columns.Next() {
-			var currentColumn string
-			columns.Scan(&currentColumn)
-			tableColumns = append(tableColumns, currentColumn)
-		}
-		//add columns into the map
-		tables[table] = builders.Table{Columns: tableColumns}
-	}
-	fmt.Println(tables)
-	return tables, nil
-}
+// func retrieveTables(connection *sql.DB) (tables map[string]builders.Table, err error) {
+// 	tables = make(map[string]builders.Table)
+//
+// 	tableStatement := "SELECT name FROM Sys.Tables"
+// 	rows, err := connection.Query(tableStatement)
+// 	defer rows.Close()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	for rows.Next() {
+// 		var table string
+//
+// 		rows.Scan(&table)
+//
+// 		//Get columns for each table
+// 		columnStatement := fmt.Sprintf("SELECT Column_Name FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Name = '%s'", table)
+// 		columns, err := connection.Query(columnStatement)
+// 		defer columns.Close()
+// 		if err != nil {
+// 			return nil, err
+// 		}
+//
+// 		var tableColumns = make([]string, 0)
+//
+// 		for columns.Next() {
+// 			var currentColumn string
+// 			columns.Scan(&currentColumn)
+// 			tableColumns = append(tableColumns, currentColumn)
+// 		}
+// 		//add columns into the map
+// 		tables[table] = builders.Table{Columns: tableColumns}
+// 	}
+// 	fmt.Println(tables)
+// 	return tables, nil
+// }
 
 //Temporary testing tables
 
