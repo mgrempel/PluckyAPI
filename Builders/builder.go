@@ -6,11 +6,11 @@ import (
 )
 
 //Builder struct contains all required functions for parsing a request into an SQL statement
-type Builder struct {
+type SQLBuilder struct {
 	Tables map[string]models.Table
 }
 
-func (bld Builder) findTable(table string) (check bool) {
+func (bld SQLBuilder) findTable(table string) (check bool) {
 	var tableNames = make([]string, 0)
 	for key := range bld.Tables {
 		tableNames = append(tableNames, key)
@@ -19,7 +19,7 @@ func (bld Builder) findTable(table string) (check bool) {
 	return misc.Contains(tableNames, table)
 }
 
-func (bld Builder) findColumns(tableName string, columns []string) bool {
+func (bld SQLBuilder) findColumns(tableName string, columns []string) bool {
 	tableColumns := bld.Tables[tableName].Columns
 
 	for _, columnName := range tableColumns {
