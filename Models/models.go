@@ -46,6 +46,7 @@ type Request struct {
 	Command   string
 	TableName string
 	Values    map[string]string
+	Updates   map[string]string
 }
 
 // type QueryRequest struct {
