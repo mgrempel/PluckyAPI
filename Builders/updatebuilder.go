@@ -39,6 +39,6 @@ func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryW
 
 	updateQuery := fmt.Sprintf("UPDATE %s SET %s", table, columnParameter)
 
-	queryWithUpdate.AppendToQuery(updateQuery)
-	return queryWithUpdate, nil
+	query.AppendToQuery(updateQuery)
+	return query, nil
 }
