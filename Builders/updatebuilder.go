@@ -15,7 +15,6 @@ func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryW
 	}
 	//Check to see if columns exist before proceeding
 	var columns = make([]string, 0)
-
 	for key := range parameters {
 		columns = append(columns, key)
 	}
@@ -24,16 +23,15 @@ func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryW
 	}
 
 	var columnParameter string
-
-	//I need to worry about the types of the columns here as well.
 	counter := 0
-	for key := range parameters {
+	for key, value := range parameters {
 		//This isn't accounting for quotations or anything like that, but it's a start
 		columnParameter += fmt.Sprintf("%s = %s", key, fmt.Sprintf("@%v", counter))
 
 		if counter != len(parameters)-1 {
 			columnParameter += ", "
 		}
+		query.AddParameter(value)
 		counter++
 	}
 
