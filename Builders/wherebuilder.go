@@ -17,12 +17,12 @@ func (bld SQLBuilder) Where(request models.Request, query models.Query) (queryWi
 	offset := len(query.GetParams())
 	for key, value := range parameters {
 		if value != "" {
-			whereQueryString += fmt.Sprintf("%s = @%v", key, counter+offset)
-			query.AddParameter(value)
-
-			if counter < len(parameters)-1 {
+			if counter != 0 {
 				whereQueryString += " AND "
 			}
+
+			whereQueryString += fmt.Sprintf("%s = @%v", key, counter+offset)
+			query.AddParameter(value)
 			counter++
 		}
 	}
