@@ -9,18 +9,6 @@ import (
 func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryWithUpdate models.Query, err error) {
 	table := request.TableName
 	parameters := request.Updates
-	//Check if table exists before proceeding
-	if !bld.findTable(table) {
-		return models.Query{}, fmt.Errorf("table does not exist in the database")
-	}
-	//Check to see if columns exist before proceeding
-	var columns = make([]string, 0)
-	for key := range parameters {
-		columns = append(columns, key)
-	}
-	if !bld.findColumns(table, columns) {
-		return models.Query{}, fmt.Errorf("Invalid fields")
-	}
 
 	var columnParameter string
 	counter := 0

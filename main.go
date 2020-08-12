@@ -1,8 +1,8 @@
 package main
 
 import (
-	"PluckyAPI/Builders"
-	"PluckyAPI/Endpoints"
+	builders "PluckyAPI/Builders"
+	endpoints "PluckyAPI/Endpoints"
 	"PluckyAPI/Utilities/dbhelpers"
 	"fmt"
 )
@@ -33,8 +33,8 @@ func main() {
 		panic(err)
 	}
 
-	builder := builders.SQLBuilder{Tables: tableMap}
-	container := endpoints.Container{Db: database, Builder: builder}
+	builder := builders.SQLBuilder{}
+	container := endpoints.Container{Db: database, Builder: builder, Tables: tableMap}
 
 	container.HandleRequest()
 	//var builder =
