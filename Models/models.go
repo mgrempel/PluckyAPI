@@ -16,7 +16,8 @@ type Column struct {
 //Query supporting struct for query generation
 type Query struct {
 	queryString string
-	parameters  []string
+	//parameters  []string
+	parameters []interface{}
 }
 
 //AddParameter Adds a new parameter to the query for binding later on
@@ -35,7 +36,7 @@ func (q Query) GetQuery() string {
 }
 
 //GetParams returns the query parameters.
-func (q Query) GetParams() []string {
+func (q Query) GetParams() []interface{} {
 	return q.parameters
 }
 
