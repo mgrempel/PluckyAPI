@@ -21,7 +21,7 @@ func (bld SQLBuilder) Where(request models.Request, query models.Query) (queryWi
 				whereQueryString += " AND "
 			}
 
-			whereQueryString += fmt.Sprintf("%s = @%v", key, counter+offset)
+			whereQueryString += fmt.Sprintf("%s = @p%v", key, counter+offset)
 			query.AddParameter(value)
 			counter++
 		}

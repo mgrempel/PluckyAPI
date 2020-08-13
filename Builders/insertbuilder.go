@@ -20,7 +20,7 @@ func (bld SQLBuilder) Insert(request models.Request, query models.Query) (queryW
 	var variableString string
 	for index, column := range columns {
 		columnString += column
-		variableString += fmt.Sprintf("@%v", index)
+		variableString += fmt.Sprintf("@p%v", index)
 		query.AddParameter(column)
 		if index != len(columns)-1 {
 			columnString += ", "

@@ -14,7 +14,7 @@ func (bld SQLBuilder) Update(request models.Request, query models.Query) (queryW
 	counter := 0
 	for key, value := range parameters {
 		//This isn't accounting for quotations or anything like that, but it's a start
-		columnParameter += fmt.Sprintf("%s = %s", key, fmt.Sprintf("@%v", counter))
+		columnParameter += fmt.Sprintf("%s = %s", key, fmt.Sprintf("@p%v", counter))
 
 		if counter != len(parameters)-1 {
 			columnParameter += ", "
