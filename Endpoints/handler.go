@@ -5,22 +5,30 @@ import (
 	"PluckyAPI/Utilities/misc"
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 /*HandleRequest Just a place holder for now, will eventually be called asynchronously by an endpoint and passed instructions
 for building an sql query and handing it off to another function for execution. The main job of this func will be to parse a json requests
 into a json response containing all of the requested rows etc.
 an enpoin */
-func (env *Container) HandleRequest() {
-	builder := env.Builder
-	//This will be kinda what incoming JSON will look like.
-	b := []byte(`{"Command":"INSERT","TableName":"TestTable2","Values":{"inttest":1},"Updates":null}`)
+func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
+	//Ensure we have all we need from the request
+	if r.Body == nil {
+		http.Error(w, "Please send a request body", 400)
+	}
 
-	//UnMarshall query into a request struct - Might couple this off later but idk
+	//Variables which will be used in the request
+	builder := env.Builder
 	var request = models.Request{}
 	var query = models.Query{}
 	var err error
-	json.Unmarshal(b, &request)
+
+	//Decode the request
+	err = json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Error decoding request", 400)
+	}
 
 	//Determine if the request is valid
 	//Table name check

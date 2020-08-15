@@ -5,6 +5,7 @@ import (
 	endpoints "PluckyAPI/Endpoints"
 	"PluckyAPI/Utilities/dbhelpers"
 	"fmt"
+	"net/http"
 )
 
 // TODO: 1. Sort out opening a connection to the database
@@ -36,59 +37,6 @@ func main() {
 	builder := builders.SQLBuilder{}
 	container := endpoints.Container{Db: database, Builder: builder, Tables: tableMap}
 
-	container.HandleRequest()
-	//var builder =
-
-	// var container = endpoints.Container{Db: database}
-	// container.HandleRequest()
-
-	//Initialize the container for the SQL Builders
-	//container := builders.Container{Tables: tableMap}
-}
-
-//Determine list of valid table names. This is to allow for dynamic queries without having to bind table names to a prepared query, which is unsupported for select statements
-//Cheeky workaround lol
-// func retrieveTables(connection *sql.DB) (tables map[string]builders.Table, err error) {
-// 	tables = make(map[string]builders.Table)
-//
-// 	tableStatement := "SELECT name FROM Sys.Tables"
-// 	rows, err := connection.Query(tableStatement)
-// 	defer rows.Close()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	for rows.Next() {
-// 		var table string
-//
-// 		rows.Scan(&table)
-//
-// 		//Get columns for each table
-// 		columnStatement := fmt.Sprintf("SELECT Column_Name FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Name = '%s'", table)
-// 		columns, err := connection.Query(columnStatement)
-// 		defer columns.Close()
-// 		if err != nil {
-// 			return nil, err
-// 		}
-//
-// 		var tableColumns = make([]string, 0)
-//
-// 		for columns.Next() {
-// 			var currentColumn string
-// 			columns.Scan(&currentColumn)
-// 			tableColumns = append(tableColumns, currentColumn)
-// 		}
-// 		//add columns into the map
-// 		tables[table] = builders.Table{Columns: tableColumns}
-// 	}
-// 	fmt.Println(tables)
-// 	return tables, nil
-// }
-
-//Temporary testing tables
-
-//TestTable temporary test table
-type TestTable struct {
-	UserName string
-	Password string
+	http.HandleFunc("/api", container.HandleRequest)
+	http.ListenAndServe(":8080", nil)
 }
