@@ -33,7 +33,7 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	//Determine if the request is valid
 	//Table name check
 	if !env.findTable(request.TableName) {
-		panic(fmt.Errorf("Invalid table"))
+		http.Error(w, "Table does not exist", 400)
 	}
 	table := env.Tables[request.TableName].Columns
 	columns := make([]string, 0)
@@ -45,19 +45,25 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	//Table Value check
 	for key := range request.Values {
 		if !misc.Contains(columns, key) {
-			panic(fmt.Errorf("Invalid value columns"))
+			http.Error(w, "Invalid value fields", 400)
 		}
 	}
 
 	//Update check
+	if request.Updates != nil {
+		for key := range request.Updates {
+			if !misc.Contains(columns, key) {
+				http.Error(w, "Invalid update fields", 400)
+			}
+		}
+	}
 
 	//Determine the type of request
 	switch request.Command {
 	case "SELECT":
 		query, err = builder.Select(request, query)
 		if err != nil {
-			//Need a func to handle creating and returning an error to the caller
-			panic(err)
+			http.Error(w, err.Error(), 400)
 		}
 	case "INSERT":
 		query, err = builder.Insert(request, query)
@@ -67,21 +73,21 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	case "UPDATE":
 		query, err = builder.Update(request, query)
 		if err != nil {
-			panic(err)
+			http.Error(w, err.Error(), 400)
 		}
 	case "DELETE":
 		query, err = builder.Delete(request, query)
 		if err != nil {
-			panic(err)
+			http.Error(w, err.Error(), 400)
 		}
 	default:
-		fmt.Println("Something went wrong lol")
+		http.Error(w, "Could not determine the request type", 400)
 	}
 
 	if request.Values != nil && request.Command != "INSERT" {
 		query, err = builder.Where(request, query)
 		if err != nil {
-			panic(err)
+			http.Error(w, err.Error(), 400)
 		}
 	}
 
@@ -90,7 +96,15 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	for _, param := range query.GetParams() {
 		fmt.Print(param)
 	}
-	fmt.Println(query.GetQuery())
+	// fmt.Println(query.GetQuery())
+	//
+	// fmt.Println(env.executeQuery(query))
 
-	fmt.Println(env.executeQuery(query))
+	resp, err := env.executeQuery(query)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resp)
 }
