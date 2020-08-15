@@ -12,14 +12,6 @@ import (
 )
 
 func main() {
-	//Parameters for the connection string, these will eventually be pulled from a config file
-	// const (
-	// 	server   = "192.168.100.151"
-	// 	port     = 1433
-	// 	user     = "GoSQLUser"
-	// 	password = "terriblepassword123"
-	// )
-
 	//Get config object from confighelper
 	config, err := confighelper.GetConfigValues()
 	if err != nil {
