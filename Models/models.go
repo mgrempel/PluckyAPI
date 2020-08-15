@@ -52,8 +52,8 @@ type Request struct {
 
 //Config struct containing the necessary values for opening a connection to a database
 type Config struct {
-	ServerAddress string
-	Port          int
-	User          string
-	Password      string
+	ServerAddress string `yaml:"ServerAddress"`
+	Port          int    `yaml:"Port"`
+	User          string `yaml:"User"`
+	Password      string `yaml:"Password"`
 }
