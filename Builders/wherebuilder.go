@@ -11,10 +11,8 @@ func (bld SQLBuilder) Where(request models.Request, query models.Query) (queryWi
 	parameters := request.Values
 	whereQueryString := " WHERE "
 
-	fmt.Println(query.GetParams())
-
 	counter := 0
-	offset := len(query.GetParams())
+	offset := len(query.GetParams()) + 1
 	for key, value := range parameters {
 		if value != "" {
 			if counter != 0 {

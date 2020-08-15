@@ -20,15 +20,15 @@ func (bld SQLBuilder) Insert(request models.Request, query models.Query) (queryW
 	var variableString string
 	for index, column := range columns {
 		columnString += column
-		variableString += fmt.Sprintf("@p%v", index)
-		query.AddParameter(column)
+		variableString += fmt.Sprintf("@p%v", index+1)
+		query.AddParameter(parameters[column])
 		if index != len(columns)-1 {
 			columnString += ", "
 			variableString += ", "
 		}
 	}
 
-	insertStatement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s);", table, columnString, variableString)
+	insertStatement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", table, columnString, variableString)
 	query.AppendToQuery(insertStatement)
 	return query, nil
 }
