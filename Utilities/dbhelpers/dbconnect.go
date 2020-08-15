@@ -8,5 +8,9 @@ import (
 
 //NewDb Instantiates a new connection pool and returns a pointer.
 func NewDb(connectionString string) (connection *sql.DB, err error) {
-	return sql.Open("sqlserver", connectionString)
+	connection, err = sql.Open("sqlserver", connectionString)
+	if err != nil {
+		return nil, err
+	}
+	return connection, nil
 }
