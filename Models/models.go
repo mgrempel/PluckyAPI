@@ -50,6 +50,10 @@ type Request struct {
 	Updates   map[string]interface{}
 }
 
-// type QueryRequest struct {
-//
-// }
+//Config struct containing the necessary values for opening a connection to a database
+type Config struct {
+	serverAddress string
+	port          int
+	user          string
+	password      string
+}
