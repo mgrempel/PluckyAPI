@@ -1,0 +1,5 @@
+#Rename this file to 'config.yml' and replace the values below
+ServerAddress: "x.x.x.x"
+Port: 14333
+User: "SQLUser"
+Password: "Password"
