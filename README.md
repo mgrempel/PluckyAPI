@@ -1,2 +1,2 @@
 # PluckyAPI
-A WebApi built with Go, for use with SQL Server
+A database access framework built with go, for use with prototyping.
