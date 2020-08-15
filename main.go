@@ -3,6 +3,7 @@ package main
 import (
 	builders "PluckyAPI/Builders"
 	endpoints "PluckyAPI/Endpoints"
+	"PluckyAPI/Utilities/confighelper"
 	"PluckyAPI/Utilities/dbhelpers"
 	"fmt"
 	"net/http"
@@ -12,15 +13,22 @@ import (
 
 func main() {
 	//Parameters for the connection string, these will eventually be pulled from a config file
-	const (
-		server   = "192.168.100.151"
-		port     = 1433
-		user     = "GoSQLUser"
-		password = "terriblepassword123"
-	)
+	// const (
+	// 	server   = "192.168.100.151"
+	// 	port     = 1433
+	// 	user     = "GoSQLUser"
+	// 	password = "terriblepassword123"
+	// )
+
+	//Get config object from confighelper
+	config, err := confighelper.GetConfigValues()
+	if err != nil {
+		panic("Invalid config file")
+	}
+
 	//Create connection string
 	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d",
-		server, user, password, port)
+		config.ServerAddress, config.User, config.Password, config.Port)
 	database, err := dbhelpers.NewDb(connectionString)
 	//This is temporary lol
 	if err != nil {

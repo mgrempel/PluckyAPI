@@ -52,8 +52,8 @@ type Request struct {
 
 //Config struct containing the necessary values for opening a connection to a database
 type Config struct {
-	serverAddress string
-	port          int
-	user          string
-	password      string
+	ServerAddress string
+	Port          int
+	User          string
+	Password      string
 }
