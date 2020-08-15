@@ -6,21 +6,19 @@ import (
 	"PluckyAPI/Utilities/dbhelpers"
 	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
-// TODO: 1. Sort out opening a connection to the database
-//       2. Decide on format of incoming json structure
-//       3. Determine how to parse received data into a usable sql query
-//       4. Decide on how to structure the return format (Probably JSON?) Idk if objects can be returned, but if they can it would still limit what this api is compatible with
-
 func main() {
+	//Parameters for the connection string, these will eventually be pulled from a config file
 	const (
 		server   = "192.168.100.151"
 		port     = 1433
 		user     = "GoSQLUser"
 		password = "terriblepassword123"
 	)
-
+	//Create connection string
 	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d",
 		server, user, password, port)
 	database, err := dbhelpers.NewDb(connectionString)
@@ -37,6 +35,7 @@ func main() {
 	builder := builders.SQLBuilder{}
 	container := endpoints.Container{Db: database, Builder: builder, Tables: tableMap}
 
-	http.HandleFunc("/api", container.HandleRequest)
-	http.ListenAndServe(":8080", nil)
+	router := httprouter.New()
+	router.POST("/", container.HandleRequest)
+	http.ListenAndServe(":8080", router)
 }

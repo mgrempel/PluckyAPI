@@ -4,15 +4,16 @@ import (
 	"PluckyAPI/Models"
 	"PluckyAPI/Utilities/misc"
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 /*HandleRequest Just a place holder for now, will eventually be called asynchronously by an endpoint and passed instructions
 for building an sql query and handing it off to another function for execution. The main job of this func will be to parse a json requests
 into a json response containing all of the requested rows etc.
 an enpoin */
-func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
+func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	//Ensure we have all we need from the request
 	if r.Body == nil {
 		http.Error(w, "Please send a request body", 400)
@@ -92,13 +93,6 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query.AppendToQuery(";")
-
-	for _, param := range query.GetParams() {
-		fmt.Print(param)
-	}
-	// fmt.Println(query.GetQuery())
-	//
-	// fmt.Println(env.executeQuery(query))
 
 	resp, err := env.executeQuery(query)
 	if err != nil {

@@ -4,39 +4,25 @@ import (
 	models "PluckyAPI/Models"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 )
 
-//Perform any binding if nessecary then pass the query off to
+//execute the built query against the db, parse the results to json
 func (env Container) executeQuery(query models.Query) ([]byte, error) {
+	//Check if db is alive
 	db := env.Db
-	queryString := query.GetQuery()
-	fmt.Println(queryString)
-
 	err := db.Ping()
 	if err != nil {
-		fmt.Println("Can't connect to the database")
+		return nil, err
 	}
-
-	args := []interface{}{query.GetParams()}
-	fmt.Println(args)
-
+	//Execute query
 	var rows *sql.Rows
-
-	// if len(args) > 0 {
-	//
-	// }
-	//This is throwing an issue
-	//	sqlParams := []string{"Mackenzie", "Rempel"}
-	//var testToo = []interface{}{sqlParams}
-
 	rows, err = db.Query(query.GetQuery(), (query.GetParams())...)
-
 	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
 
+	//Parse resulting rows into JSON
 	//Solution for this grabbed from stackoverflow.com/a/60386531/12849275
 	columnTypes, err := rows.ColumnTypes()
 
@@ -71,7 +57,7 @@ func (env Container) executeQuery(query models.Query) ([]byte, error) {
 		err := rows.Scan(scanArgs...)
 
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		masterData := map[string]interface{}{}
