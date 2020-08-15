@@ -18,9 +18,20 @@ func (env Container) executeQuery(query models.Query) ([]byte, error) {
 		fmt.Println("Can't connect to the database")
 	}
 
-	//	args := []interface{}{query.GetParams()}
+	args := []interface{}{query.GetParams()}
+	fmt.Println(args)
 
-	rows, err := db.Query(queryString)
+	var rows *sql.Rows
+
+	// if len(args) > 0 {
+	//
+	// }
+	//This is throwing an issue
+	//	sqlParams := []string{"Mackenzie", "Rempel"}
+	//var testToo = []interface{}{sqlParams}
+
+	rows, err = db.Query(query.GetQuery(), (query.GetParams())...)
+
 	defer rows.Close()
 	if err != nil {
 		return nil, err

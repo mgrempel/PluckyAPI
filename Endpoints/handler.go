@@ -14,7 +14,7 @@ an enpoin */
 func (env *Container) HandleRequest() {
 	builder := env.Builder
 	//This will be kinda what incoming JSON will look like.
-	b := []byte(`{"Command":"UPDATE","TableName":"TestTable1","Values":{"UserName":"mackenzie","Password":null},"Updates":{"Username":"mackenzie","Password":"rempel"}}`)
+	b := []byte(`{"Command":"INSERT","TableName":"TestTable2","Values":{"inttest":1},"Updates":null}`)
 
 	//UnMarshall query into a request struct - Might couple this off later but idk
 	var request = models.Request{}
@@ -34,13 +34,14 @@ func (env *Container) HandleRequest() {
 		columns = append(columns, value.ColumnName)
 	}
 
-	//Table column check
+	//Table Value check
 	for key := range request.Values {
-		fmt.Println(key)
 		if !misc.Contains(columns, key) {
 			panic(fmt.Errorf("Invalid value columns"))
 		}
 	}
+
+	//Update check
 
 	//Determine the type of request
 	switch request.Command {
@@ -50,19 +51,16 @@ func (env *Container) HandleRequest() {
 			//Need a func to handle creating and returning an error to the caller
 			panic(err)
 		}
-		//fmt.Println(query.GetQuery())
 	case "INSERT":
 		query, err = builder.Insert(request, query)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(query.GetQuery())
 	case "UPDATE":
 		query, err = builder.Update(request, query)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(query.GetQuery())
 	case "DELETE":
 		query, err = builder.Delete(request, query)
 		if err != nil {
@@ -80,13 +78,11 @@ func (env *Container) HandleRequest() {
 	}
 
 	query.AppendToQuery(";")
-	fmt.Println(query.GetQuery())
-	//fmt.Println("\n")
-	for _, param := range query.GetParams() {
-		fmt.Print(param + " ")
-	}
-	//env.executeQuery(query)
-	//Evaluate where constraint
 
-	//fmt.Println(request)
+	for _, param := range query.GetParams() {
+		fmt.Print(param)
+	}
+	fmt.Println(query.GetQuery())
+
+	fmt.Println(env.executeQuery(query))
 }

@@ -21,7 +21,7 @@ type Query struct {
 }
 
 //AddParameter Adds a new parameter to the query for binding later on
-func (q *Query) AddParameter(newParam string) {
+func (q *Query) AddParameter(newParam interface{}) {
 	q.parameters = append(q.parameters, newParam)
 }
 
@@ -46,8 +46,8 @@ func (q Query) GetParams() []interface{} {
 type Request struct {
 	Command   string
 	TableName string
-	Values    map[string]string
-	Updates   map[string]string
+	Values    map[string]interface{}
+	Updates   map[string]interface{}
 }
 
 // type QueryRequest struct {
