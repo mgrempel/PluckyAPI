@@ -17,6 +17,7 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 	//Ensure we have all we need from the request
 	if r.Body == nil {
 		http.Error(w, "Please send a request body", 400)
+		return
 	}
 
 	//Variables which will be used in the request
@@ -29,12 +30,14 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, "Error decoding request", 400)
+		return
 	}
 
 	//Determine if the request is valid
 	//Table name check
 	if !env.findTable(request.TableName) {
 		http.Error(w, "Table does not exist", 400)
+		return
 	}
 	table := env.Tables[request.TableName].Columns
 	columns := make([]string, 0)
@@ -65,30 +68,36 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 		query, err = builder.Select(request, query)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
+			return
 		}
 	case "INSERT":
 		query, err = builder.Insert(request, query)
 		if err != nil {
-			panic(err)
+			http.Error(w, err.Error(), 400)
+			return
 		}
 	case "UPDATE":
 		query, err = builder.Update(request, query)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
+			return
 		}
 	case "DELETE":
 		query, err = builder.Delete(request, query)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
+			return
 		}
 	default:
 		http.Error(w, "Could not determine the request type", 400)
+		return
 	}
 
 	if request.Values != nil && request.Command != "INSERT" {
 		query, err = builder.Where(request, query)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
+			return
 		}
 	}
 
@@ -97,6 +106,7 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 	resp, err := env.executeQuery(query)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
