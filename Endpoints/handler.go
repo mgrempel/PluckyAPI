@@ -50,6 +50,7 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 	for key := range request.Values {
 		if !misc.Contains(columns, key) {
 			http.Error(w, "Invalid value fields", 400)
+			return
 		}
 	}
 
@@ -58,6 +59,7 @@ func (env *Container) HandleRequest(w http.ResponseWriter, r *http.Request, _ ht
 		for key := range request.Updates {
 			if !misc.Contains(columns, key) {
 				http.Error(w, "Invalid update fields", 400)
+				return
 			}
 		}
 	}
